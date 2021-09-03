@@ -11,6 +11,15 @@ body {
   font-weight:600;
 }
 
+.main_title:hover {
+  text-decoration: none;
+  color: #ffd835;
+}
+
+.title {
+  color: #00eaff;
+}
+
 
 .circleBar {
   margin-top: 50px;
@@ -33,6 +42,8 @@ body {
   color: #fe53bb;
   font-weight: 100;
 }
+
+
 
 
 
