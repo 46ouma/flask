@@ -1,5 +1,5 @@
 # System Monitor
-![systemMonitor](https://user-images.githubusercontent.com/87174876/132064190-b3cb65b0-2717-4055-af3d-df6509d88435.png)
+![sysmonitor](https://user-images.githubusercontent.com/87174876/132070630-247140dd-0aa9-437d-8183-26958d85ee26.png)
 
 
 It collects CPU and RAM usage data, appends to a pandas dataframe, then display a live matplotlib PNG graph of RAM and CPU % usage over time.
