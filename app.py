@@ -5,6 +5,7 @@ import base64
 import matplotlib.pyplot as plt
 import pandas as pd
 import psutil
+import platform
 import os
 import sys
 import seaborn as sns
@@ -19,7 +20,10 @@ cpuusage=psutil.cpu_percent(2)
 x=cpuusage/100
 ramusage=psutil.virtual_memory()[2]
 y=ramusage/100
-
+proc=platform.processor()
+z=proc
+sys=platform.system()
+w=sys
 application.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(application)
 
@@ -109,16 +113,19 @@ def index():
                         df = pd.DataFrame()
                         connecttime = time.time()
                     else:
-                        return render_template('index.html', value=img,cpu=x,ram=y)
+                        return render_template('index.html', value=img,cpu=x,ram=y,proc=z,sys=w)
 
                 DataPointCount += 1
                 plt.close('all')
-               
+                
 
         except(KeyboardInterrupt, SystemExit):
             return 0
 
 	
-	 if __name__ == '__main__':
+	
+   
+
+if __name__ == '__main__':
     print('Server Up !')
     socketio.run(application, host='0.0.0.0', port=8080)
