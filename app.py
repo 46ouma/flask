@@ -16,7 +16,9 @@ from flask_socketio import SocketIO, emit
 application = Flask(__name__)
 
 cpuusage=psutil.cpu_percent(2)
+x=cpuusage/100
 ramusage=psutil.virtual_memory()[2]
+y=ramusage/100
 
 application.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(application)
@@ -107,7 +109,7 @@ def index():
                         df = pd.DataFrame()
                         connecttime = time.time()
                     else:
-                        return render_template('index.html', value=img,cpu=cpuusage,ram=ramusage)
+                        return render_template('index.html', value=img,cpu=x,ram=y)
 
                 DataPointCount += 1
                 plt.close('all')
