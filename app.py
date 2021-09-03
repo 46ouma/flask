@@ -5,6 +5,8 @@ import base64
 import matplotlib.pyplot as plt
 import pandas as pd
 import psutil
+import os
+import sys
 import seaborn as sns
 from flask import Flask, render_template, request
 from datetime import datetime
@@ -12,12 +14,16 @@ import time
 from flask_socketio import SocketIO, emit
 
 application = Flask(__name__)
+
+cpuusage=psutil.cpu_percent(2)
+ramusage=psutil.virtual_memory()[2]
+
 application.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(application)
 
 sns.set()
 sns.set_context("paper")
-sns.set_style("ticks", {'axes.facecolor': '#EAEAF2', 'axes.grid': True, 'grid.color': '.8', 'grid.linestyle': u'-'})
+sns.set_style("ticks", {'axes.facecolor': 'white',   'grid.color': '.8', 'grid.linestyle': u'-'})
 sns.set_palette("bright")
 DataPointCount = 0
 df = pd.DataFrame()
@@ -49,6 +55,8 @@ def index():
         firstrequest = True
         startClock = datetime.now()
         clock = datetime.now()
+        
+        
 
     while True:
         try:
@@ -57,31 +65,35 @@ def index():
                 TD = datetime.now() - startClock
                 CpuVal = psutil.cpu_percent(interval=None, percpu=False)
                 RamVal = psutil.virtual_memory()[2]
-                df2 = pd.DataFrame({'CPU%': CpuVal, 'RAM%': RamVal,
+                df2 = pd.DataFrame({'%CPU': CpuVal, '%RAM': RamVal, 
                                     'Time':datetime.now().strftime("%S")},
                                    index=[DataPointCount])
                 df = df.append(df2)
-                df['meanCPU%'] = df['CPU%'].mean()
-                df['minCPU%'] = df['CPU%'].min()
-                df['maxCPU%'] = df['CPU%'].max()
+              
                 df.set_index("Time", drop=True, inplace=True)
 
                 if DataPointCount > 2:
                     plt.figure()
+                    
                     if DataPointCount % 500 == 0:
                         width = width / 1.3
                         if width < 0.5:
                             width = 0.5
 
-                    df.plot(ylim=(0, 120), linewidth=width, alpha=0.5)
+                  
+                    df.plot(ylim=(0, 120), linewidth=1, alpha=0.5)
                     plt.Axes.set_autoscalex_on(plt, True)
                     plt.minorticks_off()
+                    
+                    
+                    
+                  
+                    df.plot(marker='o')
                     TD = str(TD)
-                    plt.xlabel('Echantillons: {}'.format(DataPointCount))
-                    plt.ylabel("Utilisation en %")
+                    plt.xlabel('Echantillons: {}'.format(DataPointCount),color="c")
+                    plt.ylabel("Utilisation en %",color="r")
                     TD = TD.split('.')[0]
-                    plt.title("Time:\n{}".format(TD))
-
+                    plt.title("Time:\n{}".format(TD) , color='red')
                     img_base64 = BytesIO()
                     plt.savefig(img_base64, format='jpg', dpi=120)
                     img = base64.b64encode(img_base64.getvalue())
@@ -95,14 +107,16 @@ def index():
                         df = pd.DataFrame()
                         connecttime = time.time()
                     else:
-                        return render_template('index.html', value=img)
+                        return render_template('index.html', value=img,cpu=cpuusage,ram=ramusage)
 
                 DataPointCount += 1
                 plt.close('all')
+               
 
         except(KeyboardInterrupt, SystemExit):
             return 0
 
-if __name__ == '__main__':
+	
+	 if __name__ == '__main__':
     print('Server Up !')
     socketio.run(application, host='0.0.0.0', port=8080)
